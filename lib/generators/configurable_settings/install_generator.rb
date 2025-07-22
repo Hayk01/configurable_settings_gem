@@ -9,17 +9,27 @@ module ConfigurableSettings
       source_root File.expand_path("templates", __dir__)
 
       def ask_for_base_name
-        @base_name = ask("Enter base name (e.g., firm, user, clinic):").strip.downcase
-        @migration_file = "create_#{@base_name}_settings_tables"
-        @migration_class = @migration_file.camelize
-        @definitions_table = "#{@base_name}_setting_definitions"
-        @settings_table = "#{@base_name}_settings"
-        @model_namespace = @base_name.camelize
+        @base_name           = ask("Enter base name:").strip.downcase
+        @base_class_name     = @base_name.camelize
+        @setting_class       = "#{@base_class_name}Setting"
+        @definition_class    = "#{@base_class_name}SettingDefinition"
+        @migration_class     = "Create#{@setting_class.pluralize}Tables"
+        @migration_file      = "create_#{@base_name}_settings_tables"
+        @definitions_table   = "#{@base_name}_setting_definitions"
+        @settings_table      = "#{@base_name}_settings"
       end
 
-      def generate_scaffolds
-        generate "scaffold", "#{@model_namespace}::SettingDefinition key:string data_type:string default_value:text"
-        generate "scaffold", "#{@model_namespace}::Setting #{@base_name}:references key:string value:text"
+      def check_base_model_exists
+        model_path = File.join("app", "models", "#{@base_name}.rb")
+        unless File.exist?(model_path)
+          say_status :error, "Base model '#{@base_class_name}' not found at #{model_path}. Please create it first.", :red
+          exit 1
+        end
+      end
+
+      def generate_models
+        generate "model", "configurable_settings/#{@definition_class} key:string data_type:string default_value:text"
+        generate "model", "configurable_settings/#{@setting_class} #{@base_name}:references #{@definition_class}:references key:string value:text"
       end
 
       def self.next_migration_number(dirname)
