@@ -19,7 +19,7 @@ It generates dynamic settings and setting definitions tables scoped by a user-de
 1. Add the gem to your application's Gemfile:
 
 ```ruby
-gem "configurable_settings", path: "../configurable_settings"
+gem "configurable_settings", git: "https://github.com/Hayk01/configurable_settings_gem.git"
 ```
 
 > Replace the path with your actual gem location or use a published gem source.
