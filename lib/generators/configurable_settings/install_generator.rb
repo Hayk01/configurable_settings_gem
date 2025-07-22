@@ -28,8 +28,8 @@ module ConfigurableSettings
       end
 
       def generate_models
-        generate "model", "configurable_settings/#{@definition_class} key:string data_type:string default_value:text"
-        generate "model", "configurable_settings/#{@setting_class} #{@base_name}:references #{@definition_class}:references key:string value:text"
+        generate "scaffold", "configurable_settings/#{@definition_class} key:string data_type:string default_value:text"
+        generate "scaffold", "configurable_settings/#{@setting_class} #{@base_name}:references #{@definition_class}:references key:string value:text"
       end
 
       def self.next_migration_number(dirname)
