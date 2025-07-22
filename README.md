@@ -1,30 +1,30 @@
 # ConfigurableSettings
 
-A Rails engine gem to easily add customizable settings for your models such as Firm, User, Clinic, etc.
-It generates dynamic settings and setting definitions tables scoped by a user-defined base name.
+A Rails engine gem to easily add customizable settings for your models such as `Firm`, `User`, `Clinic`, etc.  
+It generates setting definitions and per-record settings tables scoped by a user-defined base model.
 
 ---
 
 ## Features
 
-* Generate setting definitions (`key`, `data_type`, `default_value`)
-* Store settings per model instance (e.g., per Firm)
-* Fully scaffolded models, controllers, and views for managing settings
-* Supports any base model name you choose (`firm`, `user`, `clinic`, etc.)
+- Define available setting keys and types (`key`, `data_type`, `default_value`)
+- Store actual setting values for each model instance (e.g., per `Firm`, `User`)
+- Models are namespaced under `ConfigurableSettings::` for clean reusability
+- Fully dynamic: supports any model name (`firm`, `user`, `clinic`, etc.)
 
 ---
 
 ## Installation
 
-1. Add the gem to your application's Gemfile:
+1. Add the gem to your app's `Gemfile`:
 
 ```ruby
 gem "configurable_settings", git: "https://github.com/Hayk01/configurable_settings_gem.git"
-```
+````
 
-> Replace the path with your actual gem location or use a published gem source.
+> Replace with your actual GitHub repo URL if needed.
 
-2. Install the gem:
+2. Install dependencies:
 
 ```bash
 bundle install
@@ -34,31 +34,34 @@ bundle install
 
 ## Setup
 
-Run the install generator to create the necessary migrations, models, and controllers:
+Run the install generator:
 
 ```bash
 rails generate configurable_settings:install
 ```
 
-You will be prompted to enter the base name for your settings. This should correspond to your existing model (e.g., `firm`, `user`, `clinic`).
-
-Example:
+You will be prompted to enter your base model name (e.g., `firm`, `user`, `clinic`):
 
 ```
 Enter base name (e.g., firm, user, clinic):
 > firm
 ```
 
-The generator will create:
+This generates:
 
-* Migration files to create `firm_setting_definitions` and `firm_settings` tables
-* Scaffolded models, controllers, and views namespaced under `Firm`
+* A migration file to create the `firm_setting_definitions` and `firm_settings` tables
+* Model files:
+
+  * `app/models/configurable_settings/firm_setting.rb`
+  * `app/models/configurable_settings/firm_setting_definition.rb`
+
+> ✅ Your base model (`Firm`, `User`, etc.) must already exist. The gem does **not** create or modify it.
 
 ---
 
 ## Run Migrations
 
-After generation, migrate your database:
+After generation, apply the migrations:
 
 ```bash
 rails db:migrate
@@ -68,51 +71,39 @@ rails db:migrate
 
 ## Usage
 
-### Managing Setting Definitions
+### Define Setting Keys
 
-Access the setting definitions UI at:
+Use Rails Admin, ActiveAdmin, or create them programmatically:
 
+```ruby
+ConfigurableSettings::FirmSettingDefinition.create!(
+  key: "enable_auto_email",
+  data_type: "boolean",
+  default_value: "true"
+)
 ```
-/firm/setting_definitions
-```
-
-Here you can create setting keys with:
-
-* `key` — a unique identifier string
-* `data_type` — type of data stored (e.g., string, integer)
-* `default_value` — optional default
 
 ---
 
-### Managing Settings
+### Access and Set Values per Model Instance
 
-Settings belong to your base model instance. For example, to manage settings for a specific firm, use the scaffold UI:
-
-```
-/firm/settings
-```
-
-You can create, update, and delete settings for your firm instances.
-
----
-
-### Programmatic Access
-
-Example in your `Firm` model:
+In your base model (e.g., `Firm`):
 
 ```ruby
 class Firm < ApplicationRecord
-  has_many :settings, class_name: "Firm::Setting"
+  has_many :firm_settings,
+           class_name: "ConfigurableSettings::FirmSetting",
+           dependent: :destroy
 
-  def setting_value(key)
-    s = settings.joins(:setting_definition).find_by(firm_settings: { key: key })
-    s&.value || Firm::SettingDefinition.find_by(key: key)&.default_value
+  def get_setting(key)
+    setting = firm_settings.find_by(key: key)
+    setting&.value || ConfigurableSettings::FirmSettingDefinition.find_by(key: key)&.default_value
   end
 
-  def set_setting(key, val)
-    definition = Firm::SettingDefinition.find_by!(key: key)
-    setting = settings.find_or_initialize_by(setting_definition: definition)
-    setting.value = val
+  def set_setting(key, value)
+    definition = ConfigurableSettings::FirmSettingDefinition.find_by!(key: key)
+    setting = firm_settings.find_or_initialize_by(setting_definition: definition, key: key)
+    setting.value = value
     setting.save!
   end
 end
@@ -120,11 +111,12 @@ end
 
 ---
 
-## Mounting the Engine Routes (Optional)
+## Optional: Mount the Engine (for future UI)
 
-If you want to access the gem’s UI under a dedicated path, add this to your `config/routes.rb`:
+If you build shared UI components inside the engine, you can mount its routes:
 
 ```ruby
+# config/routes.rb
 mount ConfigurableSettings::Engine => "/configurable_settings"
 ```
 
@@ -132,5 +124,9 @@ mount ConfigurableSettings::Engine => "/configurable_settings"
 
 ## Customization
 
-* Change base name during install for different models (e.g., `user`, `clinic`)
-* Extend models or controllers generated by scaffolds for additional behavior
+* Re-run the generator for another model (`user`, `clinic`, etc.)
+* Extend or override the generated models to:
+
+  * Add validations
+  * Support enums
+  * Add casting logic for `data_type`
