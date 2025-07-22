@@ -1,0 +1,20 @@
+class <%= @migration_class %> < ActiveRecord::Migration[7.1]
+  def change
+    create_table :<%= @definitions_table %> do |t|
+      t.string :key, null: false
+      t.string :data_type, null: false
+      t.text :default_value
+      t.timestamps
+    end
+
+    create_table :<%= @settings_table %> do |t|
+      t.references :<%= @base_name %>, null: false, foreign_key: true, index: true
+      t.references :setting_definition, null: false, foreign_key: { to_table: :<%= @definitions_table %> }, index: true
+      t.string :key, null: false
+      t.text :value
+      t.timestamps
+    end
+
+    add_index :<%= @settings_table %>, [:<%= @base_name %>_id, :setting_definition_id], unique: true, name: "index_<%= @settings_table %>_on_owner_and_definition"
+  end
+end
