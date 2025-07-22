@@ -17,10 +17,6 @@ module ConfigurableSettings
         @model_namespace = @base_name.camelize
       end
 
-      def create_migration_file
-        migration_template "create_tables.rb.erb", "db/migrate/#{@migration_file}.rb"
-      end
-
       def generate_scaffolds
         generate "scaffold", "#{@model_namespace}::SettingDefinition key:string data_type:string default_value:text"
         generate "scaffold", "#{@model_namespace}::Setting #{@base_name}:references key:string value:text"
