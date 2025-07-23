@@ -1,0 +1,58 @@
+# frozen_string_literal: true
+
+class <%= model_name %>SettingsController < ApplicationController
+  before_action :set_setting, only: %i[show edit update destroy]
+  helper_method :model_name, :setting_class
+
+  def index
+    @settings = <%= model_name %>Setting.all
+  end
+
+  def show; end
+
+  def new
+    @setting = <%= model_name %>Setting.new
+  end
+
+  def create
+    @setting = <%= model_name %>Setting.new(setting_params)
+    if @setting.save
+      redirect_to @setting, notice: "Setting created."
+    else
+      render :new
+    end
+  end
+
+  def edit; end
+
+  def update
+    if @setting.update(setting_params)
+      redirect_to @setting, notice: "Setting updated."
+    else
+      render :edit
+    end
+  end
+
+  def destroy
+    @setting.destroy
+    redirect_to <%= model_name.underscore %>_settings_path, notice: "Deleted."
+  end
+
+  private
+
+  def set_setting
+    @setting = <%= model_name %>Setting.find(params[:id])
+  end
+
+  def setting_params
+    params.require(:<%= model_name.underscore %>_setting).permit(:<%= model_name.underscore %>_id, :setting_definition_id, :key, :value)
+  end
+
+  def model_name
+    "<%= model_name %>"
+  end
+
+  def setting_class
+    "#{model_name}Setting".constantize
+  end
+end

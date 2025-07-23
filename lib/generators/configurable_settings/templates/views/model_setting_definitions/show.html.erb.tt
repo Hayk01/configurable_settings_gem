@@ -1,0 +1,17 @@
+<p>
+  <strong>Key:</strong>
+  <%%= @definition.key %>
+</p>
+
+<p>
+  <strong>Data type:</strong>
+  <%%= @definition.data_type %>
+</p>
+
+<p>
+  <strong>Default value:</strong>
+  <%%= @definition.default_value %>
+</p>
+
+<%%= link_to 'Edit', edit_polymorphic_path(@definition) %> |
+<%%= link_to 'Back', send("#{model_name.underscore}_setting_definitions_path") %>

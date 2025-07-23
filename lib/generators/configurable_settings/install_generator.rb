@@ -1,39 +1,80 @@
 require "rails/generators"
 require "rails/generators/migration"
+require "active_support/inflector"
 
 module ConfigurableSettings
   module Generators
     class InstallGenerator < Rails::Generators::Base
       include Rails::Generators::Migration
 
+      # This __dir__ is .../install
       source_root File.expand_path("templates", __dir__)
+      argument :model_name, type: :string, banner: "ModelName"
 
-      def ask_for_base_name
-        @base_name           = ask("Enter base name:").strip.downcase
-        @base_class_name     = @base_name.camelize
-        @setting_class       = "#{@base_class_name}Setting"
-        @definition_class    = "#{@base_class_name}SettingDefinition"
-        @migration_class     = "Create#{@setting_class.pluralize}Tables"
-        @migration_file      = "create_#{@base_name}_settings_tables"
-        @definitions_table   = "#{@base_name}_setting_definitions"
-        @settings_table      = "#{@base_name}_settings"
+      # Ensure unique timestamps for migrations
+      def self.next_migration_number(dirname)
+        Time.now.utc.strftime("%Y%m%d%H%M%S")
       end
 
-      def check_base_model_exists
-        model_path = File.join("app", "models", "#{@base_name}.rb")
-        unless File.exist?(model_path)
-          say_status :error, "Base model '#{@base_class_name}' not found at #{model_path}. Please create it first.", :red
-          exit 1
+      # Prepare instance vars
+      def init_names
+        @base          = model_name.underscore
+        @defs_table    = "#{@base}_setting_definitions"
+        @settings_table = "#{@base}_settings"
+      end
+
+      # 1) Abort if host model missing
+      def validate_model_exists
+        unless File.exist?(File.join(destination_root, "app/models", "#{@base}.rb"))
+          say_status :error, "Model #{model_name} not found", :red
+          exit(1)
         end
       end
 
-      def generate_models
-        generate "scaffold", "configurable_settings/#{@definition_class} key:string data_type:string default_value:text"
-        generate "scaffold", "configurable_settings/#{@setting_class} #{@base_name}:references #{@definition_class}:references key:string value:text"
+      # 2) Migrations
+      def create_migrations
+        migration_template "db/migrate/create_model_setting_definitions.rb.tt",
+                           "db/migrate/create_#{@defs_table}.rb"
+        migration_template "db/migrate/create_model_settings.rb.tt",
+                           "db/migrate/create_#{@settings_table}.rb"
       end
 
-      def self.next_migration_number(dirname)
-        Time.now.utc.strftime("%Y%m%d%H%M%S")
+      # 3) Models
+      def create_models
+        template "models/model_setting_definition.rb.tt",
+                 "app/models/#{@base}_setting_definition.rb"
+        template "models/model_setting.rb.tt",
+                 "app/models/#{@base}_setting.rb"
+      end
+
+      # 4) Controllers
+      def create_definition_controller
+        template "controllers/model_setting_definitions_controller.rb.tt",
+                 "app/controllers/#{@base}_setting_definitions_controller.rb"
+      end
+
+      def create_setting_controller
+        template "controllers/model_settings_controller.rb.tt",
+                 "app/controllers/#{@base}_settings_controller.rb"
+      end
+
+      # 5) Views
+      def create_definition_views
+        directory "views/model_setting_definitions",
+                  "app/views/#{@base}_setting_definitions"
+      end
+
+      def create_setting_views
+        directory "views/model_settings",
+                  "app/views/#{@base}_settings"
+      end
+
+      # 6) Routes
+      def add_routes
+        route <<~RUBY
+          resources :#{@defs_table}
+          resources :#{@settings_table}
+        RUBY
       end
     end
   end

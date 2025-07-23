@@ -1,0 +1,22 @@
+<p>
+  <strong><%%= model_name %> ID:</strong>
+  <%%= @setting.<%%= model_name.underscore %>_id %>
+</p>
+
+<p>
+  <strong>Setting Definition ID:</strong>
+  <%%= @setting.setting_definition_id %>
+</p>
+
+<p>
+  <strong>Key:</strong>
+  <%%= @setting.key %>
+</p>
+
+<p>
+  <strong>Value:</strong>
+  <%%= @setting.value %>
+</p>
+
+<%%= link_to 'Edit', edit_polymorphic_path(@setting) %> |
+<%%= link_to 'Back', send("#{model_name.underscore}_settings_path") %>

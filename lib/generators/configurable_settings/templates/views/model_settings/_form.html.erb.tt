@@ -1,0 +1,38 @@
+<%%= form_with model: @setting, local: true do |f| %>
+  <%% if @setting.errors.any? %>
+    <div id="error_explanation">
+      <h2><%%= pluralize(@setting.errors.count, "error") %> prohibited this setting from being saved:</h2>
+      <ul>
+        <%% @setting.errors.full_messages.each do |msg| %>
+          <li><%%= msg %></li>
+        <%% end %>
+      </ul>
+    </div>
+  <%% end %>
+
+  <div class="field">
+    <%%= f.label "#{model_name.underscore}_id".to_sym %><br>
+    <%%= f.collection_select "#{model_name.underscore}_id".to_sym,
+        <%= model_name %>.all, :id, :name, prompt: true %>
+  </div>
+
+  <div class="field">
+    <%%= f.label "#{model_name.underscore}_setting_definition_id".to_sym  %><br>
+    <%%= f.collection_select "#{model_name.underscore}_setting_definition_id".to_sym,
+        <%= model_name %>SettingDefinition.all, :id, :key, prompt: true %>
+  </div>
+
+  <div class="field">
+    <%%= f.label :key %><br>
+    <%%= f.text_field :key %>
+  </div>
+
+  <div class="field">
+    <%%= f.label :value %><br>
+    <%%= f.text_area :value %>
+  </div>
+
+  <div class="actions">
+    <%%= f.submit %>
+  </div>
+<%% end %>

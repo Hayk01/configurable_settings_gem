@@ -1,0 +1,6 @@
+# frozen_string_literal: true
+
+class <%= model_name %>Setting < ApplicationRecord
+  belongs_to :<%= model_name.underscore %>
+  belongs_to :setting_definition, class_name: "<%= model_name %>SettingDefinition"
+end

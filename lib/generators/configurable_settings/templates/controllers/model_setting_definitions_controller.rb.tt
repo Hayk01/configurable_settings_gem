@@ -1,0 +1,58 @@
+# frozen_string_literal: true
+
+class <%= model_name %>SettingDefinitionsController < ApplicationController
+  before_action :set_definition, only: %i[show edit update destroy]
+  helper_method :model_name, :setting_definition_class
+
+  def index
+    @definitions = setting_definition_class.all
+  end
+
+  def show; end
+
+  def new
+    @definition = setting_definition_class.new
+  end
+
+  def create
+    @definition = setting_definition_class.new(definition_params)
+    if @definition.save
+      redirect_to @definition, notice: "Definition created."
+    else
+      render :new
+    end
+  end
+
+  def edit; end
+
+  def update
+    if @definition.update(definition_params)
+      redirect_to @definition, notice: "Definition updated."
+    else
+      render :edit
+    end
+  end
+
+  def destroy
+    @definition.destroy
+    redirect_to "#{model_name.underscore}_setting_definitions_path", notice: "Deleted."
+  end
+
+  private
+
+  def set_definition
+    @definition = setting_definition_class.find(params[:id])
+  end
+
+  def definition_params
+    params.require(:<%= model_name.underscore %>_setting_definition).permit(:key, :data_type, :default_value)
+  end
+
+  def model_name
+    "<%= model_name %>"
+  end
+
+  def setting_definition_class
+    "#{model_name}SettingDefinition".constantize
+  end
+end

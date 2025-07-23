@@ -1,0 +1,10 @@
+class Create<%= model_name %>SettingDefinitions < ActiveRecord::Migration[8.0]
+  def change
+    create_table :<%= @defs_table %> do |t|
+      t.string :key,         null: false
+      t.string :data_type,   null: false
+      t.text   :default_value
+      t.timestamps
+    end
+  end
+end
