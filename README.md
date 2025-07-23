@@ -1,30 +1,31 @@
 # ConfigurableSettings
 
-A Rails engine gem to easily add customizable settings for your models such as `Firm`, `User`, `Clinic`, etc.  
-It generates setting definitions and per-record settings tables scoped by a user-defined base model.
+`ConfigurableSettings` is a flexible Rails engine for managing per-record configurable settings. It generates setting definitions, setting models, migrations, controllers, and views — all scoped to the model you specify (`User`, `Firm`, `Company`, etc.).
 
 ---
 
-## Features
+## ✨ Features
 
-- Define available setting keys and types (`key`, `data_type`, `default_value`)
-- Store actual setting values for each model instance (e.g., per `Firm`, `User`)
-- Models are namespaced under `ConfigurableSettings::` for clean reusability
-- Fully dynamic: supports any model name (`firm`, `user`, `clinic`, etc.)
+- Define **setting definitions** for any model.
+- Store **per-record settings** with typed defaults and options.
+- Auto-generate models, migrations, controllers, and views.
+- Supports **default values**, **value types**, and **option validation**.
+- Supports **backfilling** missing settings across existing records.
+- Dynamic access helpers: fetch, set, and validate settings in code.
+- Works with **any model**: `User`, `Firm`, `Company`, etc.
 
 ---
 
-## Installation
+## 💾 Installation
 
-1. Add the gem to your app's `Gemfile`:
+Add the gem to your `Gemfile`:
 
 ```ruby
-gem "configurable_settings", git: "https://github.com/Hayk01/configurable_settings_gem.git"
-````
+gem 'configurable_settings', path: 'path/to/configurable_settings' # or use git:
+gem 'configurable_settings', git: 'https://github.com/Hayk01/configurable_settings.git'
+```
 
-> Replace with your actual GitHub repo URL if needed.
-
-2. Install dependencies:
+Install it:
 
 ```bash
 bundle install
@@ -32,36 +33,31 @@ bundle install
 
 ---
 
-## Setup
+## ⚙️ Setup
 
-Run the install generator:
+Generate settings for a model (example with `User`):
 
 ```bash
-rails generate configurable_settings:install
+rails generate configurable_settings:install User
 ```
 
-You will be prompted to enter your base model name (e.g., `firm`, `user`, `clinic`):
+This will:
 
-```
-Enter base name (e.g., firm, user, clinic):
-> firm
-```
+- Check that the `User` model exists.
+- Create migrations:
 
-This generates:
+  - `create_user_setting_definitions`
+  - `create_user_settings`
 
-* A migration file to create the `firm_setting_definitions` and `firm_settings` tables
-* Model files:
+- Generate models:
 
-  * `app/models/configurable_settings/firm_setting.rb`
-  * `app/models/configurable_settings/firm_setting_definition.rb`
+  - `UserSettingDefinition`
+  - `UserSetting`
 
-> ✅ Your base model (`Firm`, `User`, etc.) must already exist. The gem does **not** create or modify it.
+- Create controllers & views.
+- Add routes to `config/routes.rb`.
 
----
-
-## Run Migrations
-
-After generation, apply the migrations:
+Run the migrations:
 
 ```bash
 rails db:migrate
@@ -69,64 +65,100 @@ rails db:migrate
 
 ---
 
-## Usage
+## 🚀 Usage
 
-### Define Setting Keys
+### 1. Define Default Settings
 
-Use Rails Admin, ActiveAdmin, or create them programmatically:
-
-```ruby
-ConfigurableSettings::FirmSettingDefinition.create!(
-  key: "enable_auto_email",
-  data_type: "boolean",
-  default_value: "true"
-)
-```
-
----
-
-### Access and Set Values per Model Instance
-
-In your base model (e.g., `Firm`):
+In your `UserSettingDefinition` model:
 
 ```ruby
-class Firm < ApplicationRecord
-  has_many :firm_settings,
-           class_name: "ConfigurableSettings::FirmSetting",
-           dependent: :destroy
+# app/models/user_setting_definition.rb
 
-  def get_setting(key)
-    setting = firm_settings.find_by(key: key)
-    setting&.value || ConfigurableSettings::FirmSettingDefinition.find_by(key: key)&.default_value
-  end
+class UserSettingDefinition < ApplicationRecord
+  include ConfigurableSettings::Definition
 
-  def set_setting(key, value)
-    definition = ConfigurableSettings::FirmSettingDefinition.find_by!(key: key)
-    setting = firm_settings.find_or_initialize_by(setting_definition: definition, key: key)
-    setting.value = value
-    setting.save!
-  end
+  DEFAULT_SETTINGS = {
+    timezone: {
+      name: "Timezone",
+      default_value: "UTC",
+      options: ["UTC", "EST", "PST"],
+      description: "User timezone",
+      value_type: "string"
+    },
+    notifications: {
+      name: "Notifications",
+      default_value: true,
+      options: [true, false],
+      description: "Enable or disable notifications",
+      value_type: "boolean"
+    }
+  }
 end
 ```
 
----
+### 2. Create and Backfill
 
-## Optional: Mount the Engine (for future UI)
-
-If you build shared UI components inside the engine, you can mount its routes:
+Run once to initialize all default settings and backfill users missing any:
 
 ```ruby
-# config/routes.rb
-mount ConfigurableSettings::Engine => "/configurable_settings"
+UserSettingDefinition.create_default_settings
 ```
+
+This will:
+
+- Create any `DEFAULT_SETTINGS` that are missing
+- Backfill all users with those settings using the default value
+
+---
+
+## Access Settings Programmatically
+
+### Get a setting for a user
+
+```ruby
+UserSettingDefinition.value_for_parent(user, "timezone")
+# => "UTC"
+```
+
+### Set a setting for a user
+
+```ruby
+UserSettingDefinition.set_for_parent(user, "timezone", "PST")
+```
+
+### Get full setting record
+
+```ruby
+UserSettingDefinition.find_by_parent_and_key(user, "timezone")
+# => <UserSetting id:..., value: "UTC", ...>
+```
+
+### Get typed value
+
+```ruby
+setting = UserSettingDefinition.find_by_parent_and_key(user, "notifications")
+setting.typed_value # => true
+```
+
+---
+
+## Validation
+
+- Ensures required `value` presence.
+- Ensures value is one of the allowed `options`.
+- `value_type` casting is supported:
+
+  - `"boolean"` → `true`/`false`
+  - `"integer"` → `123`
+  - `"json"` → `{}`, `[]`
+  - `"string"` → `"text"`
 
 ---
 
 ## Customization
 
-* Re-run the generator for another model (`user`, `clinic`, etc.)
-* Extend or override the generated models to:
+- Generated controllers and views can be modified like any Rails app.
+- Migrations and models can be extended with your business logic.
+- Supports any model (`Firm`, `Client`, `Tenant`, etc.) via generator.
 
-  * Add validations
-  * Support enums
-  * Add casting logic for `data_type`
+---

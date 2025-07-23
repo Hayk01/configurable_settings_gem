@@ -1,5 +1,5 @@
 # frozen_string_literal: true
 
-class <%= model_name %>SettingDefinition < ApplicationRecord
-  validates :key, :data_type, presence: true
+class <%= @model_name %>SettingDefinition < ApplicationRecord
+  include ConfigurableSettings::Definition
 end

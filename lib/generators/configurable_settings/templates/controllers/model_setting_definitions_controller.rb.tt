@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class <%= model_name %>SettingDefinitionsController < ApplicationController
+class <%= @model_name %>SettingDefinitionsController < ApplicationController
   before_action :set_definition, only: %i[show edit update destroy]
   helper_method :model_name, :setting_definition_class
 

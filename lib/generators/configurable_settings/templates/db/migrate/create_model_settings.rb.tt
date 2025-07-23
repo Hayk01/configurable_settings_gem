@@ -1,16 +1,11 @@
-class Create<%= model_name %>Settings < ActiveRecord::Migration[8.0]
+class Create<%= @model_name %>Settings < ActiveRecord::Migration[7.0]
   def change
     create_table :<%= @settings_table %> do |t|
-      t.references :<%= @base %>,            null: false, foreign_key: true, index: true
-      t.references :setting_definition,      null: false, foreign_key: { to_table: :<%= @defs_table %> }, index: true
-      t.string     :key,                     null: false
-      t.text       :value
+      t.references :<%= @base %>, null: false, foreign_key: true, index: true
+      t.references :<%= @base %>_setting_definition, null: false, foreign_key: true, index: true
+
+      t.jsonb :value
       t.timestamps
     end
-
-    add_index :<%= @settings_table %>,
-              [:<%= @base %>_id, :setting_definition_id],
-              unique: true,
-              name: "index_<%= @settings_table %>_on_owner_and_definition"
   end
 end

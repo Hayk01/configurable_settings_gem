@@ -1,1 +1,120 @@
-{}
+{
+  "[css]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[erb]": {
+    "editor.defaultFormatter": null,
+    "editor.formatOnSave": false
+  },
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.quickSuggestions": {
+      "strings": true
+    }
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.quickSuggestions": {
+      "strings": true
+    }
+  },
+  "[markdown]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[ruby]": {
+    "editor.defaultFormatter": "Shopify.ruby-lsp"
+  },
+  "[yaml]": {
+    "diffEditor.ignoreTrimWhitespace": false,
+    "editor.autoIndent": "keep",
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.insertSpaces": true,
+    "editor.quickSuggestions": {
+      "comments": false,
+      "other": true,
+      "strings": true
+    }
+  },
+  "colorTabs.ignoreCase": true,
+  "colorTabs.titleBackground": true,
+  "colorTabs.titleLabel": true,
+  "editor.formatOnPaste": true,
+  "editor.formatOnSave": true,
+  "editor.formatOnSaveMode": "file",
+  "editor.inlineSuggest.enabled": true,
+  "editor.linkedEditing": false,
+  "editor.rulers": [80, 120],
+  "editor.semanticHighlighting.enabled": true,
+  "editor.stickyScroll.enabled": true,
+  "editor.suggest.insertMode": "replace",
+  "editor.tabSize": 2,
+  "emeraldwalk.runonsave": {
+    "commands": [
+      {
+        "cmd": "echo 'Running commands on ${file}'",
+        "match": "\\.erb$",
+        "type": "shell"
+      },
+      {
+        "label": "Format ERB file (with `prettier` as HTML)",
+        "cmd": "npx prettier ${file} --write",
+        "match": "\\.erb$",
+        "type": "shell"
+      },
+      {
+        "label": "Format ERB file (with `erb-formatter`)",
+        "cmd": "bundle exec erb-format ${file} --write",
+        "match": "\\.erb$",
+        "type": "shell"
+      },
+      {
+        "label": "Format ERB file (with `rufo`)",
+        "cmd": "bundle exec rufo ${file}",
+        "match": "\\.erb$",
+        "type": "shell"
+      }
+      // {
+      //   "label": "Lint ERB file (with `erb_lint`)",
+      //   "cmd": "bundle exec erblint ${file}",
+      //   "match": "\\.erb$",
+      //   "type": "shell"
+      // }
+    ]
+  },
+  "emmet.includeLanguages": {
+    "erb": "html",
+    "html.erb": "html"
+  },
+  "erb-formatter.lineLength": 80,
+  "eslint.enable": true,
+  "eslint.validate": ["javascript"],
+  "files.associations": {
+    "*.erb": "erb",
+    "*.html.erb": "erb"
+  },
+  "files.associations": {
+    "*.erb.tt": "erb",
+    "*.html.erb": "erb"
+  },
+  "files.encoding": "utf8",
+  "files.eol": "\n",
+  "files.exclude": {
+    "**/.DS_Store": true,
+    "**/.git": true,
+    "javascript/.next/**": true,
+    "javascript/node_modules/**": true
+  },
+  "files.insertFinalNewline": true,
+  "files.trimFinalNewlines": true,
+  "prettier.printWidth": 80,
+  "rubyLsp.rubyVersionManager": {
+    "identifier": "asdf"
+  },
+  "search.exclude": {
+    ".bundle/**": true,
+    "javascript/node_modules/**": true,
+    "log/**": true,
+    "storage/**": true,
+    "tmp/**": true
+  }
+}
