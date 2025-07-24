@@ -1,4 +1,3 @@
-````md
 # ConfigurableSettings
 
 `ConfigurableSettings` is a flexible Rails engine for managing per-record configurable settings. It generates setting definitions, setting models, migrations, controllers, and views — all scoped to the model you specify (`User`, `Firm`, `Company`, etc.).
