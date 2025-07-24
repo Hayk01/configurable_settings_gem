@@ -202,6 +202,6 @@ setting.typed_value # => true
 
 * Generated controllers and views can be modified like any Rails app.
 * Migrations and models can be extended with your business logic.
-* Supports any model (`Firm`, `Client`, `Tenant`, etc.) via generator.
+* Supports any model via generator.
 
 ---
