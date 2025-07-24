@@ -5,6 +5,7 @@ class Create<%= @model_name %>Settings < ActiveRecord::Migration[7.0]
       t.references :<%= @base %>_setting_definition, null: false, foreign_key: true, index: true
 
       t.jsonb :value
+
       t.timestamps
     end
   end

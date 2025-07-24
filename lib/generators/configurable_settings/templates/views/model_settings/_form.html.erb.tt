@@ -11,20 +11,15 @@
   <%% end %>
 
   <div class="field">
-    <%%= f.label "#{model_name.underscore}_id".to_sym %><br>
-    <%%= f.collection_select "#{model_name.underscore}_id".to_sym,
-        <%= model_name %>.all, :id, :name, prompt: true %>
+    <%%= f.label :<%= @model_name.underscore %>_id %><br>
+    <%%= f.collection_select :<%= @model_name.underscore %>_id,
+        <%= @model_name %>.all, :id, :id, prompt: true %>
   </div>
 
   <div class="field">
-    <%%= f.label "#{model_name.underscore}_setting_definition_id".to_sym  %><br>
-    <%%= f.collection_select "#{model_name.underscore}_setting_definition_id".to_sym,
-        <%= model_name %>SettingDefinition.all, :id, :key, prompt: true %>
-  </div>
-
-  <div class="field">
-    <%%= f.label :key %><br>
-    <%%= f.text_field :key %>
+    <%%= f.label :<%= @model_name.underscore %>_setting_definition_id  %><br>
+    <%%= f.collection_select :<%= @model_name.underscore %>_setting_definition_id,
+        <%= @model_name %>SettingDefinition.all, :id, :key, prompt: true %>
   </div>
 
   <div class="field">

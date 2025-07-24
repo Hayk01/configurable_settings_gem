@@ -4,14 +4,29 @@
 </p>
 
 <p>
-  <strong>Data type:</strong>
-  <%%= @definition.data_type %>
+  <strong>Name:</strong>
+  <%%= @definition.name %>
 </p>
 
 <p>
-  <strong>Default value:</strong>
-  <%%= @definition.default_value %>
+  <strong>Value Type:</strong>
+  <%%= @definition.value_type %>
+</p>
+
+<p>
+  <strong>Default Value:</strong>
+  <%%= @definition.default_value.to_json %>
+</p>
+
+<p>
+  <strong>Options:</strong>
+  <%%= @definition.options.to_json %>
+</p>
+
+<p>
+  <strong>Description:</strong>
+  <%%= @definition.description %>
 </p>
 
 <%%= link_to 'Edit', edit_polymorphic_path(@definition) %> |
-<%%= link_to 'Back', send("#{model_name.underscore}_setting_definitions_path") %>
+<%%= link_to 'Back', <%= @model_name.underscore %>_setting_definitions_path %>
