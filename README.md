@@ -1,3 +1,4 @@
+````md
 # ConfigurableSettings
 
 `ConfigurableSettings` is a flexible Rails engine for managing per-record configurable settings. It generates setting definitions, setting models, migrations, controllers, and views — all scoped to the model you specify (`User`, `Firm`, `Company`, etc.).
@@ -23,7 +24,7 @@ Add the gem to your `Gemfile`:
 ```ruby
 gem 'configurable_settings', path: 'path/to/configurable_settings' # or use git:
 gem 'configurable_settings', git: 'https://github.com/Hayk01/configurable_settings.git'
-```
+````
 
 Install it:
 
@@ -43,25 +44,68 @@ rails generate configurable_settings:install User
 
 This will:
 
-- Check that the `User` model exists.
-- Create migrations:
+* Check that the `User` model exists.
 
-  - `create_user_setting_definitions`
-  - `create_user_settings`
+* Create migrations:
 
-- Generate models:
+  * `create_user_setting_definitions`
+  * `create_user_settings`
 
-  - `UserSettingDefinition`
-  - `UserSetting`
+* Generate models:
 
-- Create controllers & views.
-- Add routes to `config/routes.rb`.
+  * `UserSettingDefinition`
+  * `UserSetting`
+
+* Create controllers & views.
+
+* Add routes to `config/routes.rb`.
 
 Run the migrations:
 
 ```bash
 rails db:migrate
 ```
+
+---
+
+## 📦 Controllers and Routes
+
+The generator creates two controllers:
+
+* `UserSettingDefinitionsController`
+* `UserSettingsController`
+
+Each controller includes standard CRUD actions and views (`index`, `show`, `new`, `edit`, etc.).
+
+Example: accessing user settings via routes
+
+```ruby
+# config/routes.rb (automatically added)
+resources :user_setting_definitions
+resources :user_settings
+```
+
+### Example URLs:
+
+* `/user_setting_definitions`
+* `/user_settings`
+
+### Example controller usage:
+
+```ruby
+# GET /user_settings
+def index
+  @settings = UserSetting.all
+end
+
+# POST /user_settings
+def create
+  @setting = UserSetting.new(setting_params)
+  @setting.save!
+end
+```
+
+> ✅ You can fully customize the controllers and views after generation.
 
 ---
 
@@ -106,8 +150,8 @@ UserSettingDefinition.create_default_settings
 
 This will:
 
-- Create any `DEFAULT_SETTINGS` that are missing
-- Backfill all users with those settings using the default value
+* Create any `DEFAULT_SETTINGS` that are missing
+* Backfill all users with those settings using the default value
 
 ---
 
@@ -142,23 +186,23 @@ setting.typed_value # => true
 
 ---
 
-## Validation
+## ✅ Validation
 
-- Ensures required `value` presence.
-- Ensures value is one of the allowed `options`.
-- `value_type` casting is supported:
+* Ensures required `value` presence.
+* Ensures value is one of the allowed `options`.
+* `value_type` casting is supported:
 
-  - `"boolean"` → `true`/`false`
-  - `"integer"` → `123`
-  - `"json"` → `{}`, `[]`
-  - `"string"` → `"text"`
+  * `"boolean"` → `true`/`false`
+  * `"integer"` → `123`
+  * `"json"` → `{}`, `[]`
+  * `"string"` → `"text"`
 
 ---
 
-## Customization
+## 🛠️ Customization
 
-- Generated controllers and views can be modified like any Rails app.
-- Migrations and models can be extended with your business logic.
-- Supports any model (`Firm`, `Client`, `Tenant`, etc.) via generator.
+* Generated controllers and views can be modified like any Rails app.
+* Migrations and models can be extended with your business logic.
+* Supports any model (`Firm`, `Client`, `Tenant`, etc.) via generator.
 
 ---
