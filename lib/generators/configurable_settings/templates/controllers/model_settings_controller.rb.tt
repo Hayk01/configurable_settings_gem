@@ -33,7 +33,7 @@ class <%= @model_name %>SettingsController < ApplicationController
 
   def destroy
     @setting.destroy
-    redirect_to polymorphic_path(:<%= @model_name.underscore %>_settings), notice: 'Setting deleted successfully.'
+    redirect_to <%= @model_name.underscore %>_settings_path, notice: 'Setting deleted successfully.'
   end
 
   private

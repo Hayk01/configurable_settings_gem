@@ -33,7 +33,7 @@ class <%= @model_name %>SettingDefinitionsController < ApplicationController
 
   def destroy
     @definition.destroy
-    redirect_to polymorphic_path(:<%= @model_name.underscore %>_setting_definitions), notice: 'Definition deleted successfully.'
+    redirect_to <%= @model_name.underscore %>_setting_definitions_path, notice: 'Definition deleted successfully.'
   end
 
   private
@@ -43,6 +43,13 @@ class <%= @model_name %>SettingDefinitionsController < ApplicationController
   end
 
   def definition_params
-    params.require(:<%= @model_name.underscore %>_setting_definition).permit(:key, :name, :value_type, :default_value, :options, :description)
+    params.require(:<%= @model_name.underscore %>_setting_definition).permit(
+      :key,
+      :name,
+      :value_type,
+      :default_value,
+      :description,
+      :options
+    )
   end
 end
