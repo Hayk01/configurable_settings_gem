@@ -1,3 +1,10 @@
 class <%= @model_name %>SettingDefinition < ApplicationRecord
   include ConfigurableSettings::Definition
+
+  enum :value_type, {
+    string: 0,
+    integer: 1,
+    boolean: 2,
+    json: 3
+  }
 end
