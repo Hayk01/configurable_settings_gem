@@ -8,12 +8,20 @@ Gem::Specification.new do |spec|
   spec.authors = ['Hayk01']
   spec.email = ['hayk_h@internet.ru']
 
-  spec.summary = 'TODO: Write a short summary, because RubyGems requires one.'
-  spec.description = 'TODO: Write a longer description or delete this line.'
+  spec.homepage = "https://example.com/your-private-gem"
   spec.license = 'MIT'
   spec.required_ruby_version = '>= 3.1.0'
-
+  
   spec.add_dependency 'rails', '>= 7.0'
+  
+  # This should be your private gem server URL if you're pushing there
+  spec.metadata['allowed_push_host'] = "https://gems.example.com"
+  
+  spec.metadata['homepage_uri'] = spec.homepage
+  spec.metadata['source_code_uri'] = "https://example.com/your-private-gem/repo"
+  spec.metadata['changelog_uri'] = "https://example.com/your-private-gem/changelog"
+  spec.summary = 'Internal gem for managing configurable settings in our Rails apps.'
+  spec.description = 'This gem provides a configurable settings mechanism for use in private Rails applications.'
 
   # Specify which files should be added to the gem when it is released.
   # The `git ls-files -z` loads the files in the RubyGem that have been added into git.
